@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
-project (cmake-cpp-nasm)
+project (cmake-cpp-nasm-test)
 
 #Set C++ language version
 set(CMAKE_CXX_STANDARD 17)
@@ -28,5 +28,4 @@ endif(WIN32)
 
 
 #Make a EXE with cpp and asm files
-add_executable(cmake-cpp-nasm main.cpp src/asm.asm src/library.asm lib/library.hpp)
-
+add_executable(cmake-cpp-nasm-test test.cpp ../src/asm.asm ../src/library.asm ../lib/library.hpp)

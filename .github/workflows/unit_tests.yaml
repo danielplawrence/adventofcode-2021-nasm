@@ -1,0 +1,26 @@
+name: Unit Tests
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request:
+    branches:
+      - master
+      - main
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: configure
+        run: cmake -Stst -Bbuild
+
+      - name: build
+        run: cmake --build build -j4
+
+      - name: test
+        run: ./tst/cmake-build-debug/cmake-cpp-nasm-test
