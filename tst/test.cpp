@@ -5,9 +5,6 @@
 extern "C" long long asm_foo(void);
 
 TEST_CASE("Testing assembly functions"){
-    SUBCASE("asm_is_windows"){
-        CHECK(!asm_is_windows());
-    }
     SUBCASE("compute answer"){
         compute_answer();
         CHECK(compute_answer() == 42);
