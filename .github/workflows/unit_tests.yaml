@@ -35,4 +35,4 @@ jobs:
       - name: build
         run: cmake --build build -j4
       - name: test
-        run: pwd && ls
+        run: cd build && ./cmake-cpp-nasm-test
