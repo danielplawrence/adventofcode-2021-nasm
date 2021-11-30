@@ -15,12 +15,24 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
+      - name: Update Homebrew
+        run: |
+          brew update --preinstall
+          cat "$(brew --repository)/Library/Taps/homebrew/homebrew-core/Formula/nasm.rb" > .github/brew-formulae
+      - name: Configure Homebrew cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/Library/Caches/Homebrew/nasm--*
+            ~/Library/Caches/Homebrew/downloads/*--nasm-*
+          key: brew-${{ hashFiles('.github/brew-formulae') }}
+          restore-keys: brew-
+      - name: Install Homebrew dependencies
+        run: |
+          env HOMEBREW_NO_AUTO_UPDATE=1 brew install nasm
       - name: configure
         run: cmake -Stst -Bbuild
-
       - name: build
         run: cmake --build build -j4
-
       - name: test
         run: ./tst/cmake-build-debug/cmake-cpp-nasm-test
