@@ -1,11 +1,12 @@
-;This can be assembled with NASM, maybe YASM
 section .text
 bits 64
 ;See library.hpp and main.cpp for "how to call these functions" from C++ code
 
 ;Exported symbols for the resuting object file. These are then just labels below
-global compute_answer, sum_4_ints, increment_pointer_int64, sum_two_ints, mul_two_ints, count_increments
-
+global compute_answer, sum_4_ints, increment_pointer_int64, sum_two_ints, mul_two_ints, count_increments, three_element_window
+extern malloc
+extern realloc
+extern free
 ;This is just a function that return the number 42
 ;Return values are "whatever is in RAX" in x64
 ;
@@ -66,3 +67,46 @@ next:
 done:
     pop rbp         ; Retrieve the caller's RBP value and put it back in RBP
     ret             ; Return
+
+; input is in [rdi]
+; srcSize is in rsi
+; destSize is in [rdx]
+; [rax] will be first element of output
+; [rdx] should contain new array size
+three_element_window:
+three_element_window_setup:
+    xor rcx, rcx ; input index
+    xor rax, rax ; output index
+    mov r9, 0 ; count of output elements
+    push r8  ; push r9 to keep stack aligned
+    push r9  ; store r9 temporarily, because we need it
+    push rdx ; store rdx temporarily, because we need it
+    push rdi ; store rdi temporarily, because we need it
+    push rsi ; store rsi temporarily, because we need it
+    mov rdi, 32 ; allocate a 32 byte array
+    call malloc ; rax now points to first element of array
+    pop rsi ; restore rsi
+    pop rdi ; restore rdi
+    pop rdx ; restore rdx
+    pop r9 ; restore r9
+    pop r8 ; restore r8
+    xor r8, r8 ; pointer to end of window
+three_element_window_next:
+    mov r8, 0   ; init r8
+    add r8, rcx ; r8 will be rcx (input index) + 3
+    add r8, 3   ; here's where we add 3
+    cmp r8, rsi ;if r8 + 3 > srcSize, end
+    jg three_element_window_done
+three_element_window_sumthreeitems:
+    mov r11, 0 ; sum is initially 0
+    add r11, [rdi] ; add the first element
+    add r11, [rdi + 8] ; add the second element
+    add r11, [rdi + 16] ; add the third element
+    mov [rax + r9 * 8], r11; add to output array
+    add rdi, 8 ; increment the window
+    inc rcx ; increment counter
+    inc r9 ; increment the output size
+    jmp three_element_window_next ; next iteration
+three_element_window_done:
+    mov [rdx], r9 ; mutate third arg to return array size
+    ret
