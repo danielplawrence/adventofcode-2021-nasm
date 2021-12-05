@@ -158,3 +158,56 @@ TEST_CASE("Day 1"){
         CHECK(destSize == 4);
     }
 }
+TEST_CASE("Day 2"){
+    SUBCASE("Moving a submarine"){
+        int64_t horizontal = 0;
+        int64_t depth = 0;
+        move_submarine(&horizontal, &depth, "up", 1);
+        CHECK(horizontal == 0);
+        CHECK(depth == -1);
+        move_submarine(&horizontal, &depth, "down", 1);
+        CHECK(horizontal == 0);
+        CHECK(depth == 0);
+        move_submarine(&horizontal, &depth, "forward", 1);
+        CHECK(horizontal == 1);
+        CHECK(depth == 0);
+    }
+    SUBCASE("Part 1"){
+        std::vector<std::pair<char*, int64_t>> inputs = {
+                {"forward", 5},
+                {"down", 5},
+                {"forward", 8},
+                {"up", 3},
+                {"down", 8},
+                {"forward", 2}
+        };
+        int64_t horizontal = 0;
+        int64_t depth = 0;
+        for (auto input: inputs){
+            auto cmd = input.first;
+            auto val = input.second;
+            move_submarine(&horizontal, &depth, cmd, val);
+        }
+        CHECK(horizontal * depth == 150);
+    }
+    SUBCASE("Part 2"){
+        std::vector<std::pair<char*, int64_t>> inputs = {
+                {"forward", 5},
+                {"down", 5},
+                {"forward", 8},
+                {"up", 3},
+                {"down", 8},
+                {"forward", 2}
+        };
+        int64_t horizontal = 0;
+        int64_t depth = 0;
+        int64_t aim = 0;
+        for (auto input: inputs){
+            auto cmd = input.first;
+            auto val = input.second;
+            move_submarine_aim(&horizontal, &depth, &aim, cmd, val);
+        }
+        CHECK(horizontal * depth == 900);
+    }
+
+}

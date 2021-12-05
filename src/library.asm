@@ -4,9 +4,8 @@ bits 64
 
 ;Exported symbols for the resuting object file. These are then just labels below
 global compute_answer, sum_4_ints, increment_pointer_int64, sum_two_ints, mul_two_ints, count_increments, three_element_window
+global move_submarine, move_submarine_aim
 extern malloc
-extern realloc
-extern free
 ;This is just a function that return the number 42
 ;Return values are "whatever is in RAX" in x64
 ;
@@ -109,4 +108,58 @@ three_element_window_sumthreeitems:
     jmp three_element_window_next ; next iteration
 three_element_window_done:
     mov [rdx], r9 ; mutate third arg to return array size
+    ret
+
+; Mutate [rdi] and [rsi] based on string in [rdx] and val in rcx
+move_submarine:
+    cmp dword [rdx], 'up'
+    je move_submarine_up
+    cmp dword [rdx], 'down'
+    je move_submarine_down
+    cmp dword [rdx], 'forward'
+    je move_submarine_forward
+move_submarine_up:
+    mov r10, [rsi]
+    sub r10, rcx
+    mov [rsi], r10
+    ret
+move_submarine_down:
+    mov r10, [rsi]
+    add r10, rcx
+    mov [rsi], r10
+    ret
+move_submarine_forward:
+    mov r10, [rdi]
+    add r10, rcx
+    mov [rdi], r10
+    ret
+
+; Mutate [rdi] (horizontal), [rsi] (down) and [rdx] (aim)
+; based on string in [rcx] and val in r8
+move_submarine_aim:
+    cmp dword [rcx], 'up'
+    je move_submarine_aim_up
+    cmp dword [rcx], 'down'
+    je move_submarine_aim_down
+    cmp dword [rcx], 'forward'
+    je move_submarine_aim_forward
+move_submarine_aim_up:
+    mov r10, [rdx]
+    sub r10, r8
+    mov [rdx], r10
+    ret
+move_submarine_aim_down:
+    mov r10, [rdx]
+    add r10, r8
+    mov [rdx], r10
+    ret
+move_submarine_aim_forward:
+    mov r10, [rdi]
+    add r10, r8
+    mov [rdi], r10
+    mov rax, [rdx] ; put aim in rax
+    mul r8 ; get val of r8 X rax -- will go in rax
+    mov r10, [rsi] ; put depth in r10
+    add r10, rax ; add rax to depth
+    mov [rsi], r10 ; update rsi with depth
     ret
